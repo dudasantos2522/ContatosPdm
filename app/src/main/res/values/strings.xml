@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">ContatosPdm</string>
+    <string name="lista_contatos">Lista de contatos</string>
+    <string name="contact">Contato</string>
+    <string name="name">Name</string>
+    <string name="address">Address</string>
+    <string name="phone">Phone</string>
+    <string name="email">Email</string>
+    <string name="save">Save</string>
+    <string name="add_contact">Add contact</string>
+</resources>
