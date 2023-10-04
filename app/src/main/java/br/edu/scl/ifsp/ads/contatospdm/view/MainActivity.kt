@@ -8,15 +8,15 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView.AdapterContextMenuInfo
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.widget.Toolbar
 import br.edu.scl.ifsp.ads.contatospdm.R
 import br.edu.scl.ifsp.ads.contatospdm.adapter.ContactAdapter
+import br.edu.scl.ifsp.ads.contatospdm.controller.ContactController
 import br.edu.scl.ifsp.ads.contatospdm.databinding.ActivityMainBinding
 import br.edu.scl.ifsp.ads.contatospdm.model.Constant.EXTRA_CONTACT
+import br.edu.scl.ifsp.ads.contatospdm.model.Constant.VIEW_CONTACT
 import br.edu.scl.ifsp.ads.contatospdm.model.Contact
 
 class MainActivity : AppCompatActivity() {
@@ -25,7 +25,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Data source
-    private val contactList: MutableList<Contact> = mutableListOf()
+    private val contactList: MutableList<Contact> by lazy {
+        contactController.getContacts()
+    }
+
+    // Controller
+    private val contactController: ContactController by lazy {
+        ContactController(this)
+    }
 
     // Adapter
     private val contactAdapter: ContactAdapter by lazy {
@@ -38,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(amb.root)
         setSupportActionBar(amb.toolbarIn.toolbar)
-        fillContacts()
+//        fillContacts()
         amb.contatosLv.adapter = contactAdapter
         carl = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if(result.resultCode == RESULT_OK) {
@@ -47,13 +54,32 @@ class MainActivity : AppCompatActivity() {
                     if (contactList.any { it.id == _contact.id }) {
                         val position = contactList.indexOfFirst { it.id == _contact.id }
                         contactList[position] = _contact
+                        contactController.editContact(_contact)
                     } else {
-                        contactList.add(_contact)
+                        val newId = contactController.insertContact(_contact)
+                        val newContact = Contact(
+                            newId,
+                            _contact.name,
+                            _contact.address,
+                            _contact.phone,
+                            _contact.email
+                        )
+                        contactList.add(newContact)
                     }
+                    contactList.sortBy { it.name }
                     contactAdapter.notifyDataSetChanged()
                 }
             }
         }
+
+        amb.contatosLv.setOnItemClickListener { parent, view, position, id ->
+            val contact = contactList[position]
+            val viewContactIntent = Intent(this, ContactActivity::class.java)
+            viewContactIntent.putExtra(EXTRA_CONTACT, contact)
+            viewContactIntent.putExtra(VIEW_CONTACT, true)
+            startActivity(viewContactIntent)
+        }
+
         registerForContextMenu(amb.contatosLv)
     }
 
