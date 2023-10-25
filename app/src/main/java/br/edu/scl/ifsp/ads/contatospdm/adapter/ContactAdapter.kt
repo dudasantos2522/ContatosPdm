@@ -17,7 +17,7 @@ class ContactAdapter(context: Context, private val contactList: MutableList<Cont
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val contact = contactList[position]
-        var tcb: TileContactBinding?
+        var tcb: TileContactBinding? = null
 
         var contactTileView = convertView
         if(contactTileView == null) {
@@ -34,6 +34,11 @@ class ContactAdapter(context: Context, private val contactList: MutableList<Cont
         val holder = contactTileView.tag as TileContactHolder
         holder.nameTv.setText(contact.name)
         holder.emailTv.setText(contact.email)
+
+        tcb?.nameTv?.setText(contact.name)
+        tcb?.emailTv?.setText(contact.email)
+        tcb?.nameTv?.text = contact.name
+        tcb?.emailTv?.text = contact.email
 
         return contactTileView
     }
