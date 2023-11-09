@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-parcelize'
     id 'com.google.devtools.ksp'
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -32,7 +33,6 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-
     viewBinding {
         enabled true
     }
@@ -52,4 +52,7 @@ dependencies {
     implementation 'androidx.room:room-runtime:2.6.0'
     annotationProcessor 'androidx.room:room-compiler:2.6.0'
     ksp 'androidx.room:room-compiler:2.6.0'
+
+    // firebase bom
+    implementation platform('com.google.firebase:firebase-bom:32.5.0')
 }

@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
-import androidx.core.content.getSystemService
 import br.edu.scl.ifsp.ads.contatospdm.R
 import br.edu.scl.ifsp.ads.contatospdm.databinding.TileContactBinding
 import br.edu.scl.ifsp.ads.contatospdm.model.Contact
@@ -35,8 +34,6 @@ class ContactAdapter(context: Context, private val contactList: MutableList<Cont
         holder.nameTv.setText(contact.name)
         holder.emailTv.setText(contact.email)
 
-        tcb?.nameTv?.setText(contact.name)
-        tcb?.emailTv?.setText(contact.email)
         tcb?.nameTv?.text = contact.name
         tcb?.emailTv?.text = contact.email
 

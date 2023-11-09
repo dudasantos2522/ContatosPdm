@@ -3,6 +3,9 @@ package br.edu.scl.ifsp.ads.contatospdm.view
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
 import android.view.ContextMenu
 import android.view.Menu
 import android.view.MenuItem
@@ -13,9 +16,9 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import br.edu.scl.ifsp.ads.contatospdm.R
 import br.edu.scl.ifsp.ads.contatospdm.adapter.ContactAdapter
-import br.edu.scl.ifsp.ads.contatospdm.controller.ContactController
 import br.edu.scl.ifsp.ads.contatospdm.controller.ContactRoomController
 import br.edu.scl.ifsp.ads.contatospdm.databinding.ActivityMainBinding
+import br.edu.scl.ifsp.ads.contatospdm.model.Constant.CONTACT_ARRAY
 import br.edu.scl.ifsp.ads.contatospdm.model.Constant.EXTRA_CONTACT
 import br.edu.scl.ifsp.ads.contatospdm.model.Constant.VIEW_CONTACT
 import br.edu.scl.ifsp.ads.contatospdm.model.Contact
@@ -38,13 +41,26 @@ class MainActivity : AppCompatActivity() {
         ContactAdapter(this,contactList)
     }
 
+    // Handler
+    val updateContactListHandler = object: Handler(Looper.getMainLooper()) {
+        override fun handleMessage(msg: Message) {
+            super.handleMessage(msg)
+            msg.data.getParcelableArray(CONTACT_ARRAY)?.also { contactArray ->
+                contactList.clear()
+                contactArray.forEach {
+                    contactList.add(it as Contact)
+                }
+                contactAdapter.notifyDataSetChanged()
+            }
+        }
+    }
+
     private lateinit var carl: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(amb.root)
         setSupportActionBar(amb.toolbarIn.toolbar)
-//        fillContacts()
         amb.contatosLv.adapter = contactAdapter
         carl = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if(result.resultCode == RESULT_OK) {
@@ -115,28 +131,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun fillContacts() {
-        for(i in 1..50) {
-            contactList.add(
-                Contact(
-                    i,
-                    "Nome $i",
-                    "Endereço $i",
-                    "Telefone $i",
-                    "Email $i"
-                )
-            )
-        }
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         unregisterForContextMenu(amb.contatosLv)
-    }
-
-    fun updateContactList(_contactList: MutableList<Contact>) {
-        contactList.clear()
-        contactList.addAll(_contactList)
-        contactAdapter.notifyDataSetChanged()
     }
 }
